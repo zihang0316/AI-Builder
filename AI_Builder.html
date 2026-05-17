@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Champ Code Academy · AI Game Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    /* Brand palette (per design system) */
+    --color-primary:    #EAF5FC;
+    --color-secondary:  #FDF7E3;
+    --color-accent-1:   #3DB896;  /* Mint */
+    --color-accent-2:   #ED7559;  /* Coral */
+    --color-accent-3:   #957FE8;  /* Purple */
+
+    /* Cool blue-white neutrals */
+    --n-0:   #FFFFFF;
+    --n-50:  #F4F9FD;
+    --n-100: #D6E8F5;
+    --n-200: #A9C8DF;
+    --n-400: #6B9BB8;
+    --n-600: #3A6880;
+    --n-800: #1C3D52;
+    --n-900: #0D1F2A;
+
+    /* Soft additions for borders / cards that read as warmer than pure cool */
+    --border: #E3EDF5;
+    --surface: #FFFFFF;
+    --page-bg: #F7FBFD;
+
+    /* Typography */
+    --font-display: 'Fredoka', 'Varela Round', sans-serif;
+    --font-body:    'Nunito', 'Trebuchet MS', sans-serif;
+    --font-code:    'Fira Code', 'Courier New', monospace;
+
+    /* Radii */
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 18px;
+    --r-xl: 24px;
+    --r-pill: 999px;
+
+    /* Shadows */
+    --shadow-card: 0 1px 0 rgba(15,38,73,0.04), 0 6px 16px -8px rgba(15,38,73,0.08);
+    --shadow-card-hover: 0 2px 0 rgba(15,38,73,0.04), 0 12px 28px -12px rgba(15,38,73,0.14);
+    --shadow-pop: 0 12px 32px -8px rgba(149,127,232,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--page-bg);
+    font-family: var(--font-body);
+    color: var(--n-900);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+    overflow-x: hidden;
+  }
+  button { font-family: inherit; }
+  input, textarea { font-family: inherit; }
+
+  /* Card hover */
+  .pc-card[role="button"], .pc-card.clickable { cursor: pointer; }
+  .pc-card.clickable:hover { box-shadow: var(--shadow-card-hover) !important; transform: translateY(-1px); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--n-100); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--n-200); }
+
+  /* Animations */
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float-up { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes pulse-ring { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(149,127,232,0.5); } 70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(149,127,232,0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(149,127,232,0); } }
+
+  .float { animation: float-up 4s ease-in-out infinite; }
+  .float-delay-1 { animation: float-up 4s ease-in-out infinite; animation-delay: 0.5s; }
+  .float-delay-2 { animation: float-up 4s ease-in-out infinite; animation-delay: 1s; }
+  .wobble { animation: wobble 3s ease-in-out infinite; }
+
+  /* Decorative grid background for hero */
+  .grid-bg {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(149,127,232,0.12) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  /* Reset for content inside iframe preview */
+  iframe { color-scheme: light; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+/* ─────────────────────────────────────────────────────────
+   ICONS — lucide-style, 24px viewBox
+   ───────────────────────────────────────────────────────── */
+const Icon = ({ name, size = 20, stroke = 'currentColor', strokeWidth = 2, style = {} }) => {
+  const paths = {
+    sparkles: <><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></>,
+    bolt: <><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></>,
+    play: <><path d="M6 4l14 8-14 8V4z"/></>,
+    arrowRight: <><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></>,
+    arrowLeft: <><path d="M19 12H5"/><path d="M11 5l-7 7 7 7"/></>,
+    check: <><path d="M5 12l5 5L20 7"/></>,
+    plus: <><path d="M12 5v14M5 12h14"/></>,
+    code: <><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></>,
+    refresh: <><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></>,
+    edit: <><path d="M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-6"/><path d="M18.4 3.6a2 2 0 1 1 2.8 2.8L12 16l-4 1 1-4 9.4-9.4z"/></>,
+    trash: <><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></>,
+    heart: <><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></>,
+    download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></>,
+    expand: <><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></>,
+    chevron: <><path d="M9 6l6 6-6 6"/></>,
+    wand: <><path d="M9 4l2 6 6 2-6 2-2 6-2-6-6-2 6-2 2-6z"/><path d="M19 13v6"/><path d="M16 16h6"/></>,
+    flame: <><path d="M12 22c4-1 7-4 7-9 0-3-2-5-3-6 0 3-2 4-3 4-1-2-2-3-2-6-2 1-6 4-6 9 0 5 3 8 7 8z"/></>,
+    grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    home: <><path d="M3 12L12 4l9 8"/><path d="M5 10v10h14V10"/></>,
+    info: <><circle cx="12" cy="12" r="9"/><path d="M12 8v.01"/><path d="M11 12h1v4h1"/></>,
+    share: <><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, ...style }}>
+      {paths[name] || null}
+    </svg>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────
+   ATOMS
+   ───────────────────────────────────────────────────────── */
+const Card = ({ children, style, onClick, accent, className = '' }) => (
+  <div className={`pc-card ${onClick ? 'clickable' : ''} ${className}`} onClick={onClick} style={{
+    background: 'var(--surface)', borderRadius: 'var(--r-lg)',
+    border: '1px solid var(--border)',
+    boxShadow: 'var(--shadow-card)',
+    padding: 20, position: 'relative', overflow: 'hidden',
+    transition: 'transform .15s ease, box-shadow .15s ease',
+    ...style,
+  }}>
+    {accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: accent }} />}
+    {children}
+  </div>
+);
+
+const Pill = ({ children, color = 'var(--color-accent-3)', filled = false, size = 'md', style = {} }) => {
+  const pad = size === 'sm' ? '3px 10px' : '5px 12px';
+  const fs = size === 'sm' ? 11 : 12;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      padding: pad, borderRadius: 'var(--r-pill)',
+      background: filled ? color : `color-mix(in srgb, ${color} 14%, transparent)`,
+      color: filled ? '#fff' : color,
+      fontFamily: 'var(--font-code)', fontWeight: 600,
+      fontSize: fs, letterSpacing: 0.3,
+      whiteSpace: 'nowrap',
+      ...style,
+    }}>{children}</span>
+  );
+};
+
+const Btn = ({ children, color = 'var(--color-accent-1)', variant = 'solid', size = 'md', onClick, icon, iconRight, style = {}, disabled, title }) => {
+  const pad = size === 'sm' ? '8px 14px' : size === 'lg' ? '14px 22px' : '11px 18px';
+  const fs = size === 'sm' ? 13 : size === 'lg' ? 16 : 14;
+  let bg = color, fg = '#fff', bd = `2px solid ${color}`;
+  if (variant === 'ghost') { bg = 'transparent'; fg = color; bd = '2px solid transparent'; }
+  if (variant === 'outline') { bg = '#fff'; fg = color; }
+  if (variant === 'soft') { bg = `color-mix(in srgb, ${color} 14%, transparent)`; fg = color; bd = '2px solid transparent'; }
+  return (
+    <button onClick={onClick} disabled={disabled} title={title} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center',
+      padding: pad, fontSize: fs, fontWeight: 700,
+      fontFamily: 'var(--font-display)',
+      borderRadius: 'var(--r-pill)', border: bd, background: bg, color: fg,
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      opacity: disabled ? 0.55 : 1,
+      boxShadow: variant === 'solid' ? `0 4px 0 color-mix(in srgb, ${color} 35%, transparent)` : 'none',
+      transition: 'transform .1s, box-shadow .1s',
+      whiteSpace: 'nowrap',
+      ...style,
+    }}
+    onMouseDown={e=>{ if(!disabled && variant==='solid') e.currentTarget.style.transform='translateY(2px)'; }}
+    onMouseUp={e=>{ e.currentTarget.style.transform='translateY(0)'; }}
+    onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; }}
+    >
+      {icon && <Icon name={icon} size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16} />}
+      {children}
+      {iconRight && <Icon name={iconRight} size={size === 'sm' ? 14 : 16} />}
+    </button>
+  );
+};
+
+const ProgressBar = ({ pct = 50, color = 'var(--color-accent-3)', height = 10, animated = true }) => (
+  <div style={{ height, background: 'var(--n-50)', borderRadius: 'var(--r-pill)', overflow: 'hidden', position: 'relative' }}>
+    <div style={{
+      width: `${pct}%`, height: '100%',
+      background: `linear-gradient(90deg, ${color}, color-mix(in srgb, ${color} 75%, white))`,
+      borderRadius: 'var(--r-pill)', transition: animated ? 'width .6s cubic-bezier(.22,.61,.36,1)' : 'none',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {animated && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+          animation: 'shine 2s infinite',
+        }} />
+      )}
+    </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────────────────────
+   CONFIG
+   ───────────────────────────────────────────────────────── */
+const SUGGESTIONS = [
+  // Classics
+  { emoji: '🐍', label: 'Snake', cat: 'arcade', diff: 'easy', prompt: 'A classic Snake game where I control a snake with arrow keys to eat apples and grow longer. Game over when I hit a wall or myself. Show the current score in big text at the top.' },
+  { emoji: '🏓', label: 'Pong', cat: 'arcade', diff: 'med', prompt: 'A 2-player Pong game. Left player uses W/S, right player uses arrow keys. First to 5 points wins. Show both scores at the top.' },
+  { emoji: '🚀', label: 'Space dodger', cat: 'arcade', diff: 'med', prompt: 'A space game where I move a rocket left/right with arrow keys to dodge falling asteroids. Track how many seconds I survive. Speed up over time.' },
+  { emoji: '🎯', label: 'Whack-a-mole', cat: 'arcade', diff: 'easy', prompt: 'A whack-a-mole game with 9 holes in a 3x3 grid. Click moles before they disappear. 30-second timer and final score with a celebration.' },
+  // Quizzes
+  { emoji: '🧠', label: 'Capitals quiz', cat: 'quiz', diff: 'easy', prompt: 'A multiple-choice quiz game about world capitals. 10 questions, score at the end, with fun celebration on each correct answer and a confetti emoji burst at the end.' },
+  { emoji: '🦕', label: 'Dino trivia', cat: 'quiz', diff: 'easy', prompt: 'A 10-question multiple-choice dinosaur trivia quiz with fun facts shown after each answer. Big colorful UI for kids. Show final score out of 10.' },
+  { emoji: '🧮', label: 'Math race', cat: 'quiz', diff: 'med', prompt: 'A speed-math game: 20 simple addition/subtraction questions in a row, timed. Show time taken at the end and a personal-best tracker using localStorage.' },
+  // Puzzles
+  { emoji: '🃏', label: 'Memory match', cat: 'puzzle', diff: 'med', prompt: 'A memory card matching game with 8 pairs of emoji on a 4x4 grid. Flip two cards at a time to find matches. Show a timer and move counter. Celebrate when all matched.' },
+  { emoji: '⚡', label: 'Reaction speed', cat: 'puzzle', diff: 'easy', prompt: 'A reaction-speed game. A big circle changes color randomly between 1 and 4 seconds; click as fast as you can when it turns green. Show milliseconds and track personal best.' },
+  // Creative
+  { emoji: '🎨', label: 'Drawing app', cat: 'creative', diff: 'easy', prompt: 'A simple drawing app with a big white canvas, a color picker with 8 colors, a brush size slider, a clear button, and a download-PNG button.' },
+  { emoji: '🎹', label: 'Tiny piano', cat: 'creative', diff: 'med', prompt: 'A 1-octave on-screen piano with 7 white keys and 5 black keys. Use the Web Audio API to play notes when clicked or when keys A,W,S,E,D,F,T,G,Y,H,U,J are pressed.' },
+  { emoji: '🖼️', label: 'Pixel art', cat: 'creative', diff: 'med', prompt: 'A 16x16 pixel-art editor. Click and drag to paint cells. 6-color palette. Clear and download-as-PNG buttons. Each cell is a perfect square with a thin grid line.' },
+];
+
+const CATEGORIES = [
+  { id: 'all',      label: 'All',         emoji: '✨' },
+  { id: 'arcade',   label: 'Arcade',      emoji: '🕹️' },
+  { id: 'quiz',     label: 'Quiz',        emoji: '🧠' },
+  { id: 'puzzle',   label: 'Puzzle',      emoji: '🧩' },
+  { id: 'creative', label: 'Creative',    emoji: '🎨' },
+];
+
+const REMIX_CHIPS = [
+  { id: 'harder',  label: 'Make it harder',   modifier: 'Make it significantly harder: faster, more obstacles, fewer lives, or tighter timing.' },
+  { id: 'easier',  label: 'Make it easier',   modifier: 'Make it noticeably easier so a young kid can win: slow it down, add more time, or simplify the rules.' },
+  { id: 'sound',   label: 'Add sound',        modifier: 'Add fun sound effects using the Web Audio API for key actions (click, score, win, lose).' },
+  { id: 'colors',  label: 'Change colors',    modifier: 'Use a completely different fun color palette than before — bright, kid-friendly, but different.' },
+  { id: 'theme',   label: 'Change the theme', modifier: 'Re-skin the game with a different fun theme (e.g. underwater, jungle, candy, robots) while keeping the same mechanics.' },
+  { id: 'timer',   label: 'Add a timer',      modifier: 'Add a visible countdown timer and a final-score celebration when time runs out.' },
+];
+
+const SYSTEM_PROMPT = `You are a game generator for Champ Code Academy, a coding platform for kids aged 7-15. Your job is to take a child's description and generate a complete, self-contained, playable HTML5 game.
+
+OUTPUT RULES (strict):
+- Return ONLY a single complete HTML document, starting with <!DOCTYPE html>.
+- No explanation, no markdown code fences, no commentary before or after the HTML.
+- All CSS and JavaScript must be inline.
+- Must fit and play well in a 640x480 iframe — size your canvas, layout, and font sizes accordingly.
+
+DESIGN RULES:
+- Use these brand colors where appropriate: #3DB896 (mint green), #ED7559 (coral), #957FE8 (soft purple), #EAF5FC (light blue background), #FDF7E3 (warm cream).
+- Use rounded corners (border-radius: 12px or more) everywhere.
+- Bright, friendly, kid-appropriate visual style. No dark/scary themes unless explicitly asked.
+- Use 'Nunito', 'Fredoka' or system-ui font families. A Google Fonts link is fine.
+- Title at the top, the game area, and a clear score/state display.
+
+GAMEPLAY RULES:
+- The game must work immediately on load — no setup or start screen unless absolutely necessary.
+- Include keyboard AND mouse/touch controls where it makes sense.
+- Always provide a way to restart after game over (button or key).
+- Code should be solid: test it mentally before outputting, fix obvious bugs, handle edge cases (player going off-screen, etc).
+- Keep it simple, fun, and immediately playable.`;
+
+/* ─────────────────────────────────────────────────────────
+   AI CALL — Anthropic API via artifact env
+   ───────────────────────────────────────────────────────── */
+async function callClaude(userPrompt) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userPrompt }],
+    }),
+  });
+  if (!response.ok) {
+    const txt = await response.text().catch(() => '');
+    throw new Error(`API error ${response.status}: ${txt.slice(0, 200)}`);
+  }
+  const data = await response.json();
+  const textBlock = (data.content || []).find(b => b.type === 'text');
+  if (!textBlock) throw new Error('No response from AI. Try again!');
+  return textBlock.text;
+}
+
+function extractHtml(raw) {
+  let html = raw.trim();
+  if (html.startsWith('```')) {
+    html = html.replace(/^```[a-zA-Z]*\n?/, '').replace(/```\s*$/, '');
+  }
+  const match = html.match(/<!DOCTYPE[\s\S]*<\/html>/i) || html.match(/<html[\s\S]*<\/html>/i);
+  if (match) html = match[0];
+  return html.trim();
+}
+
+/* ─────────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────────── */
+const Header = ({ savedCount, gamesBuiltToday }) => (
+  <header style={{
+    display: 'flex', alignItems: 'center', gap: 16,
+    padding: '18px 32px',
+    background: 'var(--surface)',
+    borderBottom: '1px solid var(--border)',
+    position: 'sticky', top: 0, zIndex: 50,
+  }}>
+    {/* Logo */}
+    <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+      <div style={{
+        width: 40, height: 40, borderRadius: 12,
+        background: 'linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3))',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 4px 12px rgba(149,127,232,0.3)',
+      }}>
+        <Icon name="bolt" size={22} stroke="#fff" strokeWidth={2.5} />
+      </div>
+      <div>
+        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16, color: 'var(--n-900)', letterSpacing: -0.3, lineHeight: 1.1 }}>
+          Champ Code Academy
+        </div>
+        <div style={{ fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-400)', fontWeight: 600, letterSpacing: 0.5, marginTop: 2 }}>
+          AI GAME BUILDER
+        </div>
+      </div>
+    </a>
+
+    <div style={{ flex: 1 }} />
+
+    {/* Stats chips */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        padding: '8px 14px', background: 'var(--color-secondary)',
+        borderRadius: 'var(--r-pill)', border: '1px solid #F0E4B5',
+      }} title="Games built today across the school">
+        <Icon name="flame" size={16} stroke="var(--color-accent-2)" strokeWidth={2.5} />
+        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent-2)' }}>{gamesBuiltToday.toLocaleString()}</span>
+        <span style={{ fontSize: 12, color: '#A07F4A', fontWeight: 600 }}>today</span>
+      </div>
+
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '8px 14px', background: '#F0EEFF',
+        borderRadius: 'var(--r-pill)', border: '1px solid #D9D2FF',
+      }} title="Your saved games">
+        <Icon name="grid" size={14} stroke="var(--color-accent-3)" strokeWidth={2.5} />
+        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent-3)' }}>{savedCount}</span>
+        <span style={{ fontSize: 12, color: '#7A64C4', fontWeight: 600 }}>saved</span>
+      </div>
+    </div>
+
+    {/* Back to portal (placeholder) */}
+    <a href="#" onClick={(e) => e.preventDefault()} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      padding: '8px 14px', borderRadius: 'var(--r-pill)',
+      border: '1.5px solid var(--border)', background: 'var(--surface)',
+      color: 'var(--n-600)', textDecoration: 'none',
+      fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+    }} title="Back to your student portal">
+      <Icon name="home" size={14} /> Portal
+    </a>
+  </header>
+);
+
+/* ─────────────────────────────────────────────────────────
+   HERO STRIP (shown when no game generated yet)
+   ───────────────────────────────────────────────────────── */
+const Hero = ({ onPickStarter }) => (
+  <div style={{
+    background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+    borderBottom: '1px solid var(--border)',
+    position: 'relative', overflow: 'hidden',
+  }}>
+    {/* Dot grid overlay */}
+    <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: 0.7 }} />
+
+    {/* Floating decorations */}
+    <span className="float" style={{ position: 'absolute', top: 30, left: '8%', fontSize: 32, opacity: 0.85 }}>✨</span>
+    <span className="float-delay-1" style={{ position: 'absolute', top: 60, right: '18%', fontSize: 24, opacity: 0.7 }}>🎮</span>
+    <span className="float-delay-2" style={{ position: 'absolute', bottom: 40, left: '14%', fontSize: 22, opacity: 0.7 }}>⭐</span>
+    <span className="wobble" style={{ position: 'absolute', bottom: 30, right: '10%', fontSize: 36, opacity: 0.9 }}>🚀</span>
+
+    <div style={{
+      maxWidth: 1200, margin: '0 auto', padding: '54px 32px 44px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+      position: 'relative',
+    }}>
+      <Pill color="var(--color-accent-3)" filled style={{ padding: '7px 16px', fontSize: 12, marginBottom: 18 }}>
+        <Icon name="sparkles" size={14} stroke="#fff" /> POWERED BY AI · BUILDS GAMES IN SECONDS
+      </Pill>
+
+      <h1 style={{
+        fontFamily: 'var(--font-display)', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 600,
+        color: 'var(--n-900)', letterSpacing: -1, lineHeight: 1.05, maxWidth: 760,
+        marginBottom: 14,
+      }}>
+        Tell us about a game.{' '}
+        <span style={{
+          background: 'linear-gradient(90deg, var(--color-accent-3), var(--color-accent-2))',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text', display: 'inline-block',
+        }}>We'll build it.</span>
+      </h1>
+
+      <p style={{
+        fontSize: 17, color: 'var(--n-600)', maxWidth: 580, lineHeight: 1.5, marginBottom: 28,
+      }}>
+        Type your idea — or tap a starter below — and our AI codes it into a real,
+        playable HTML game you can save, share, and remix.
+      </p>
+
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {SUGGESTIONS.slice(0, 4).map((s, i) => (
+          <button key={i} onClick={() => onPickStarter(s)} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '11px 18px', borderRadius: 'var(--r-pill)',
+            background: 'var(--surface)', border: '2px solid var(--color-accent-3)',
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent-3)',
+            cursor: 'pointer', boxShadow: '0 4px 0 rgba(149,127,232,0.18)',
+            transition: 'transform .12s',
+          }}
+          onMouseDown={e=>e.currentTarget.style.transform='translateY(2px)'}
+          onMouseUp={e=>e.currentTarget.style.transform='translateY(0)'}
+          onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}
+          >
+            <span style={{ fontSize: 18 }}>{s.emoji}</span>
+            Build a {s.label.toLowerCase()}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────────────────────
+   GUIDED BUILDER WIZARD
+   ───────────────────────────────────────────────────────── */
+const GUIDED_STEPS = [
+  {
+    key: 'kind',
+    q: 'What kind of game do you want?',
+    options: [
+      { id: 'arcade',  emoji: '🕹️', label: 'Action arcade',     text: 'a fast-paced arcade-style action game' },
+      { id: 'quiz',    emoji: '🧠', label: 'Quiz / trivia',      text: 'a multiple-choice quiz game' },
+      { id: 'puzzle',  emoji: '🧩', label: 'Puzzle / memory',    text: 'a puzzle game that makes me think' },
+      { id: 'creative',emoji: '🎨', label: 'Creative / sandbox', text: 'a creative sandbox where I can make stuff' },
+    ],
+  },
+  {
+    key: 'controls',
+    q: 'How do you want to control it?',
+    options: [
+      { id: 'arrows', emoji: '⬅️➡️', label: 'Arrow keys',  text: 'using arrow keys' },
+      { id: 'wasd',   emoji: '🅰️',  label: 'W A S D keys', text: 'using WASD keys' },
+      { id: 'mouse',  emoji: '🖱️',  label: 'Mouse / clicks', text: 'using mouse clicks' },
+      { id: 'tap',    emoji: '👆',   label: 'Tap / touch', text: 'using only tap/click — no keyboard' },
+    ],
+  },
+  {
+    key: 'goal',
+    q: "What's the goal?",
+    options: [
+      { id: 'score',    emoji: '⭐', label: 'Score points',   text: 'the goal is to score as many points as possible' },
+      { id: 'timer',    emoji: '⏱️', label: 'Beat the clock', text: 'there is a 30-second timer and the goal is to score before time runs out' },
+      { id: 'survive',  emoji: '💪', label: 'Survive long',   text: 'the goal is to survive as long as possible' },
+      { id: 'make',     emoji: '✨', label: 'Make something', text: 'the goal is to create something cool — no winning or losing' },
+    ],
+  },
+  {
+    key: 'theme',
+    q: 'Pick a theme!',
+    options: [
+      { id: 'space',   emoji: '🚀', label: 'Space',     text: 'with a space / rockets / aliens theme' },
+      { id: 'animals', emoji: '🦊', label: 'Animals',   text: 'with a cute animals theme' },
+      { id: 'candy',   emoji: '🍭', label: 'Candy',     text: 'with a candy / sweet treats theme' },
+      { id: 'surprise',emoji: '🎁', label: 'Surprise!', text: 'with whatever fun theme you think fits best' },
+    ],
+  },
+];
+
+const GuidedBuilder = ({ onComplete, onCancel }) => {
+  const [step, setStep] = useState(0);
+  const [picks, setPicks] = useState({});
+
+  const pick = (opt) => {
+    const next = { ...picks, [GUIDED_STEPS[step].key]: opt };
+    setPicks(next);
+    if (step < GUIDED_STEPS.length - 1) {
+      setTimeout(() => setStep(step + 1), 250);
+    } else {
+      // Compose prompt
+      const composed = `I want ${next.kind.text}, ${next.controls.text}. ${next.goal.text.charAt(0).toUpperCase() + next.goal.text.slice(1)}. Build it ${next.theme.text}.`;
+      onComplete(composed);
+    }
+  };
+
+  const current = GUIDED_STEPS[step];
+  const progress = ((step) / GUIDED_STEPS.length) * 100;
+
+  return (
+    <div style={{
+      animation: 'fadeIn .25s ease-out',
+    }}>
+      {/* Progress dots */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+        {GUIDED_STEPS.map((_, i) => (
+          <div key={i} style={{
+            flex: 1, height: 6, borderRadius: 99,
+            background: i <= step ? 'var(--color-accent-3)' : 'var(--n-50)',
+            transition: 'background .3s',
+          }} />
+        ))}
+        <button onClick={onCancel} style={{
+          fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-400)',
+          background: 'transparent', border: 'none', fontWeight: 700, cursor: 'pointer',
+          letterSpacing: 0.5, marginLeft: 4,
+        }}>SKIP</button>
+      </div>
+
+      <div key={step} style={{ animation: 'pop .3s cubic-bezier(.22,.61,.36,1)' }}>
+        <p style={{ fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-400)', fontWeight: 700, letterSpacing: 1.5, marginBottom: 6 }}>
+          STEP {step + 1} / {GUIDED_STEPS.length}
+        </p>
+        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: 'var(--n-900)', marginBottom: 16, letterSpacing: -0.3 }}>
+          {current.q}
+        </h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {current.options.map(opt => {
+            const isPicked = picks[current.key]?.id === opt.id;
+            return (
+              <button key={opt.id} onClick={() => pick(opt)} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: 14, borderRadius: 'var(--r-md)',
+                background: isPicked ? 'color-mix(in srgb, var(--color-accent-3) 12%, white)' : 'var(--n-50)',
+                border: isPicked ? '2px solid var(--color-accent-3)' : '2px solid var(--border)',
+                cursor: 'pointer', textAlign: 'left',
+                transition: 'all .15s',
+              }}
+              onMouseEnter={e => { if (!isPicked) { e.currentTarget.style.borderColor = 'var(--color-accent-3)'; e.currentTarget.style.background = '#fff'; } }}
+              onMouseLeave={e => { if (!isPicked) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--n-50)'; } }}
+              >
+                <span style={{ fontSize: 24, lineHeight: 1 }}>{opt.emoji}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14, color: 'var(--n-900)' }}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────
+   PROMPT PANEL (left side of builder)
+   ───────────────────────────────────────────────────────── */
+const PromptPanel = ({ prompt, setPrompt, generate, loading, mode, setMode, onPickSuggestion }) => {
+  const [cat, setCat] = useState('all');
+  const filtered = cat === 'all' ? SUGGESTIONS : SUGGESTIONS.filter(s => s.cat === cat);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Mode toggle */}
+      <div style={{ display: 'flex', gap: 4, background: 'var(--n-50)', borderRadius: 'var(--r-md)', padding: 4 }}>
+        {[
+          { id: 'free', label: 'Describe it', icon: 'edit' },
+          { id: 'guided', label: 'Build it together', icon: 'wand' },
+        ].map(m => (
+          <button key={m.id} onClick={() => setMode(m.id)} style={{
+            flex: 1, padding: '10px 14px', borderRadius: 'var(--r-sm)', border: 'none',
+            background: mode === m.id ? '#fff' : 'transparent',
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13,
+            color: mode === m.id ? 'var(--n-900)' : 'var(--n-600)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            boxShadow: mode === m.id ? '0 2px 4px rgba(15,38,73,0.06)' : 'none',
+            transition: 'all .15s',
+          }}>
+            <Icon name={m.icon} size={14} stroke={mode === m.id ? 'var(--color-accent-3)' : 'var(--n-400)'} />
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {mode === 'free' ? (
+        <>
+          {/* Free-form prompt */}
+          <Card style={{ padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: 'linear-gradient(135deg, var(--color-accent-3), var(--color-accent-2))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: loading ? 'pulse-ring 1.4s infinite' : 'none',
+              }}>
+                <Icon name="sparkles" size={18} stroke="#fff" strokeWidth={2.5} />
+              </div>
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: 'var(--n-900)' }}>Describe your game</h3>
+                <p style={{ fontSize: 12, color: 'var(--n-400)', marginTop: 2 }}>Mention controls, goal, colors, theme.</p>
+              </div>
+            </div>
+
+            <textarea
+              value={prompt}
+              onChange={e => setPrompt(e.target.value)}
+              placeholder="e.g. A game where I'm a fox catching falling stars with a basket. Arrow keys to move. 30-second timer. Each star is worth 10 points."
+              style={{
+                width: '100%', minHeight: 120, padding: 14,
+                border: '2px solid var(--border)', borderRadius: 'var(--r-md)',
+                fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--n-900)',
+                resize: 'vertical', outline: 'none', background: 'var(--n-50)',
+                lineHeight: 1.5,
+              }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-accent-3)'; e.currentTarget.style.background = '#fff'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--n-50)'; }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, gap: 10 }}>
+              <span style={{ fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-200)', fontWeight: 600 }}>
+                {prompt.length} chars · {prompt.trim().split(/\s+/).filter(Boolean).length} words
+              </span>
+              <Btn
+                color="var(--color-accent-3)"
+                size="md"
+                icon={loading ? null : 'sparkles'}
+                onClick={() => generate()}
+                disabled={loading || !prompt.trim()}
+              >
+                {loading ? 'Building…' : 'Build my game'}
+              </Btn>
+            </div>
+          </Card>
+
+          {/* Suggestion library */}
+          <Card style={{ padding: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--n-900)' }}>💡 Starters</h4>
+              <span style={{ fontFamily: 'var(--font-code)', fontSize: 10, color: 'var(--n-200)', fontWeight: 700, letterSpacing: 1 }}>
+                {filtered.length} IDEAS
+              </span>
+            </div>
+
+            {/* Category tabs */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 14, flexWrap: 'wrap' }}>
+              {CATEGORIES.map(c => (
+                <button key={c.id} onClick={() => setCat(c.id)} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '5px 11px', borderRadius: 'var(--r-pill)',
+                  background: cat === c.id ? 'var(--n-900)' : 'transparent',
+                  color: cat === c.id ? '#fff' : 'var(--n-600)',
+                  border: cat === c.id ? '1.5px solid var(--n-900)' : '1.5px solid var(--border)',
+                  fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 12, cursor: 'pointer',
+                }}>
+                  <span style={{ fontSize: 12 }}>{c.emoji}</span>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {filtered.map((s, i) => (
+                <button key={i} onClick={() => onPickSuggestion(s)} style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '10px 12px', borderRadius: 'var(--r-md)',
+                  background: 'var(--n-50)', border: '1.5px solid var(--border)',
+                  cursor: 'pointer', textAlign: 'left', position: 'relative',
+                  transition: 'all .12s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.borderColor = 'var(--color-accent-3)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--n-50)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                >
+                  <span style={{ fontSize: 18 }}>{s.emoji}</span>
+                  <span style={{ flex: 1, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 13, color: 'var(--n-900)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {s.label}
+                  </span>
+                  <span style={{
+                    width: 7, height: 7, borderRadius: 99,
+                    background: s.diff === 'easy' ? 'var(--color-accent-1)' : s.diff === 'med' ? 'var(--color-accent-2)' : 'var(--color-accent-3)',
+                  }} title={s.diff === 'easy' ? 'Easy' : s.diff === 'med' ? 'Medium' : 'Hard'} />
+                </button>
+              ))}
+            </div>
+          </Card>
+        </>
+      ) : (
+        <Card style={{ padding: 22 }}>
+          <GuidedBuilder
+            onComplete={(composedPrompt) => {
+              setPrompt(composedPrompt);
+              generate(composedPrompt);
+            }}
+            onCancel={() => setMode('free')}
+          />
+        </Card>
+      )}
+
+      {/* Pro tip */}
+      <Card style={{ padding: 16, background: 'var(--color-secondary)', border: '1px solid #F0E4B5' }}>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <span style={{ fontSize: 22, lineHeight: 1 }}>💡</span>
+          <div>
+            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: 'var(--n-900)', marginBottom: 3 }}>Pro tip</h4>
+            <p style={{ fontSize: 12, color: '#A07F4A', lineHeight: 1.55 }}>
+              The more details you give, the better the game. Mention <strong>controls</strong>, <strong>goal</strong>, <strong>scoring</strong>, and <strong>colors</strong> — and it'll feel like exactly what you imagined.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────
+   PREVIEW
+   ───────────────────────────────────────────────────────── */
+const Preview = ({ game, loading, error, showCode, setShowCode, onRetry, iframeRef, onRefresh, onFullscreen }) => (
+  <Card style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    {/* Toolbar */}
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '12px 16px', borderBottom: '1px solid var(--border)',
+      background: 'var(--n-50)',
+    }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ width: 11, height: 11, borderRadius: '50%', background: 'var(--color-accent-2)' }} />
+        <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#FDB52A' }} />
+        <div style={{ width: 11, height: 11, borderRadius: '50%', background: 'var(--color-accent-1)' }} />
+      </div>
+      <div style={{
+        flex: 1, padding: '6px 14px', background: '#fff',
+        borderRadius: 'var(--r-pill)', border: '1px solid var(--border)',
+        fontFamily: 'var(--font-code)', fontSize: 12, color: 'var(--n-400)',
+        display: 'flex', alignItems: 'center', gap: 8,
+        minWidth: 0,
+      }}>
+        {game ? (
+          <>
+            <Icon name="sparkles" size={12} stroke="var(--color-accent-3)" />
+            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--n-600)' }}>{game.title}</span>
+            <Pill color="var(--color-accent-1)" size="sm" style={{ padding: '1px 8px', fontSize: 10 }}>LIVE</Pill>
+          </>
+        ) : (
+          <span>preview.champcode.local</span>
+        )}
+      </div>
+      {game && !loading && (
+        <>
+          <button onClick={() => setShowCode(!showCode)} title={showCode ? 'Show preview' : 'Show code'} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            padding: '6px 12px', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--border)',
+            background: showCode ? 'var(--n-900)' : '#fff', color: showCode ? '#fff' : 'var(--n-600)',
+            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+          }}>
+            <Icon name="code" size={14} />
+            {showCode ? 'Preview' : 'Code'}
+          </button>
+          <button onClick={onRefresh} title="Restart game" style={{
+            width: 32, height: 32, borderRadius: 'var(--r-sm)',
+            border: '1.5px solid var(--border)', background: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--n-600)',
+          }}>
+            <Icon name="refresh" size={14} />
+          </button>
+          <button onClick={onFullscreen} title="Play fullscreen" style={{
+            width: 32, height: 32, borderRadius: 'var(--r-sm)',
+            border: '1.5px solid var(--border)', background: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--n-600)',
+          }}>
+            <Icon name="expand" size={14} />
+          </button>
+        </>
+      )}
+    </div>
+
+    {/* Body */}
+    <div style={{
+      flex: 1, position: 'relative',
+      background: 'var(--color-primary)',
+      minHeight: 480,
+    }}>
+      {loading && <BuildingLoader />}
+
+      {!loading && !game && !error && <EmptyPreview />}
+
+      {!loading && error && (
+        <div style={{
+          padding: 40, textAlign: 'center',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          height: '100%', minHeight: 480, gap: 14,
+        }}>
+          <div style={{ fontSize: 56 }}>😅</div>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--n-900)' }}>Oops, that didn't work</h3>
+          <p style={{ fontSize: 13, color: 'var(--n-600)', maxWidth: 340, lineHeight: 1.5 }}>{error}</p>
+          <Btn color="var(--color-accent-3)" onClick={onRetry}>Try again</Btn>
+        </div>
+      )}
+
+      {!loading && game && !showCode && (
+        <iframe
+          ref={iframeRef}
+          srcDoc={game.html}
+          title={game.title}
+          style={{ width: '100%', height: '100%', minHeight: 480, border: 'none', background: '#fff', display: 'block' }}
+          sandbox="allow-scripts allow-same-origin"
+        />
+      )}
+
+      {!loading && game && showCode && (
+        <pre style={{
+          width: '100%', height: '100%', minHeight: 480, overflow: 'auto', margin: 0,
+          padding: 22, background: 'var(--n-900)', color: '#A3D5F4',
+          fontFamily: 'var(--font-code)', fontSize: 12, lineHeight: 1.65,
+          whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+        }}>{game.html}</pre>
+      )}
+    </div>
+  </Card>
+);
+
+const BuildingLoader = () => {
+  const messages = useMemo(() => ([
+    'Reading your idea…',
+    'Sketching the game…',
+    'Writing JavaScript…',
+    'Picking colors…',
+    'Testing for bugs…',
+    'Adding a sparkle of magic ✨',
+    'Almost done!',
+  ]), []);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % messages.length), 1500);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 24, background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+      minHeight: 480,
+    }}>
+      <div style={{ position: 'relative', width: 88, height: 88 }}>
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          border: '4px solid color-mix(in srgb, var(--color-accent-3) 25%, transparent)',
+          borderTopColor: 'var(--color-accent-3)',
+          animation: 'spin 1s linear infinite',
+        }} />
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36,
+        }}>✨</div>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--n-900)', marginBottom: 6 }}>
+          Building your game
+        </h3>
+        <p key={idx} style={{
+          fontSize: 13, color: 'var(--color-accent-3)', fontFamily: 'var(--font-code)',
+          fontWeight: 600, animation: 'fadeIn .4s', letterSpacing: 0.3,
+        }}>{messages[idx]}</p>
+      </div>
+    </div>
+  );
+};
+
+const EmptyPreview = () => (
+  <div style={{
+    position: 'absolute', inset: 0,
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    padding: 40, gap: 20, textAlign: 'center', minHeight: 480,
+  }}>
+    <div style={{
+      width: 112, height: 112, borderRadius: 28,
+      background: 'linear-gradient(135deg, var(--color-accent-3), var(--color-accent-2))',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56,
+      boxShadow: 'var(--shadow-pop)',
+      animation: 'float-up 4s ease-in-out infinite',
+    }}>🎮</div>
+    <div>
+      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--n-900)', marginBottom: 8, letterSpacing: -0.3 }}>
+        Your game will appear here
+      </h3>
+      <p style={{ fontSize: 14, color: 'var(--n-600)', maxWidth: 360, lineHeight: 1.55, margin: '0 auto' }}>
+        Type an idea on the left, pick a starter, or try the step-by-step builder.
+      </p>
+    </div>
+    <div style={{ display: 'flex', gap: 16, marginTop: 6, fontSize: 12, color: 'var(--n-400)', fontFamily: 'var(--font-code)', fontWeight: 600 }}>
+      <span>⌨ Keyboard</span>
+      <span>🖱 Mouse</span>
+      <span>📱 Touch</span>
+    </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────────────────────
+   ACTION BAR (below preview when a game is loaded)
+   ───────────────────────────────────────────────────────── */
+const ActionBar = ({ game, isSaved, onSave, onRemixCustom, onDownload, onShare, onRemixWith }) => (
+  <Card style={{ padding: 18 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+        <Pill color="var(--color-accent-1)" filled size="sm">+50 XP</Pill>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--n-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title}</div>
+          <div style={{ fontSize: 12, color: 'var(--n-400)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 480 }}>
+            {game.prompt}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+        <Btn color="var(--n-600)" variant="outline" icon="share" size="sm" onClick={onShare}>Share</Btn>
+        <Btn color="var(--color-accent-3)" variant="outline" icon="download" size="sm" onClick={onDownload}>Download</Btn>
+        <Btn color={isSaved ? 'var(--color-accent-1)' : 'var(--color-accent-2)'} icon={isSaved ? 'check' : 'heart'} size="sm" onClick={onSave} disabled={isSaved}>
+          {isSaved ? 'Saved!' : 'Save game'}
+        </Btn>
+      </div>
+    </div>
+
+    {/* Quick remix chips */}
+    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px dashed var(--border)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <Icon name="refresh" size={14} stroke="var(--n-400)" />
+        <span style={{ fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-400)', fontWeight: 700, letterSpacing: 1 }}>QUICK REMIX</span>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {REMIX_CHIPS.map(c => (
+          <button key={c.id} onClick={() => onRemixWith(c)} style={{
+            padding: '6px 12px', borderRadius: 'var(--r-pill)',
+            background: 'var(--n-50)', border: '1.5px solid var(--border)',
+            fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 12, color: 'var(--n-800)',
+            cursor: 'pointer', transition: 'all .12s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#F0EEFF'; e.currentTarget.style.borderColor = 'var(--color-accent-3)'; e.currentTarget.style.color = 'var(--color-accent-3)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--n-50)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--n-800)'; }}
+          >
+            {c.label}
+          </button>
+        ))}
+        <button onClick={onRemixCustom} style={{
+          padding: '6px 12px', borderRadius: 'var(--r-pill)',
+          background: '#fff', border: '1.5px solid var(--color-accent-3)',
+          fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 12, color: 'var(--color-accent-3)',
+          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
+        }}>
+          <Icon name="edit" size={12} /> Custom remix
+        </button>
+      </div>
+    </div>
+  </Card>
+);
+
+/* ─────────────────────────────────────────────────────────
+   SAVED GAMES GALLERY
+   ───────────────────────────────────────────────────────── */
+const SavedGames = ({ savedGames, onLoad, onDelete, onDownload }) => {
+  if (savedGames.length === 0) {
+    return (
+      <Card style={{ padding: 36, textAlign: 'center', background: 'var(--n-50)' }}>
+        <div style={{ fontSize: 42, marginBottom: 10 }}>🎮</div>
+        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: 'var(--n-900)', marginBottom: 4 }}>No saved games yet</h3>
+        <p style={{ fontSize: 13, color: 'var(--n-600)' }}>Build a game above and hit Save — it'll appear here so you can come back and play.</p>
+      </Card>
+    );
+  }
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      {savedGames.map(g => (
+        <Card key={g.id} style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{
+            height: 140, background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
+            borderBottom: '1px solid var(--border)',
+          }}>
+            <iframe
+              srcDoc={g.html}
+              sandbox=""
+              style={{
+                width: 320, height: 240, border: 'none', pointerEvents: 'none',
+                transform: 'scale(0.42)', transformOrigin: 'center', background: '#fff',
+                borderRadius: 8, boxShadow: '0 4px 12px rgba(15,38,73,0.12)',
+              }}
+            />
+            <Pill color="var(--color-accent-3)" filled size="sm" style={{ position: 'absolute', top: 10, left: 10, padding: '2px 8px' }}>
+              <Icon name="sparkles" size={10} stroke="#fff" /> AI
+            </Pill>
+          </div>
+          <div style={{ padding: 14 }}>
+            <h4 title={g.title} style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--n-900)', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {g.title}
+            </h4>
+            <p style={{ fontSize: 11, color: 'var(--n-200)', marginBottom: 12, fontFamily: 'var(--font-code)', fontWeight: 600 }}>
+              {new Date(g.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {g.html.length.toLocaleString()} bytes
+            </p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <Btn color="var(--color-accent-1)" size="sm" icon="play" onClick={() => onLoad(g)} style={{ flex: 1 }}>Play</Btn>
+              <button onClick={() => onDownload(g)} title="Download" style={{
+                width: 32, height: 32, borderRadius: 'var(--r-pill)', border: '2px solid var(--border)',
+                background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: 'var(--n-400)',
+              }}>
+                <Icon name="download" size={14} />
+              </button>
+              <button onClick={() => onDelete(g.id)} title="Delete" style={{
+                width: 32, height: 32, borderRadius: 'var(--r-pill)', border: '2px solid var(--border)',
+                background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: 'var(--n-400)',
+              }}>
+                <Icon name="trash" size={14} />
+              </button>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────
+   FULLSCREEN PLAY OVERLAY
+   ───────────────────────────────────────────────────────── */
+const FullscreenPlay = ({ game, onClose }) => (
+  <div style={{
+    position: 'fixed', inset: 0, zIndex: 100,
+    background: 'rgba(13,31,42,0.92)',
+    display: 'flex', flexDirection: 'column',
+    padding: 28, animation: 'fadeIn .2s',
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, color: '#fff' }}>
+      <Icon name="sparkles" size={18} stroke="#fff" />
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600 }}>{game.title}</span>
+      <Pill color="var(--color-accent-1)" filled size="sm">PLAYING</Pill>
+      <div style={{ flex: 1 }} />
+      <button onClick={onClose} style={{
+        padding: '10px 18px', borderRadius: 'var(--r-pill)',
+        background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.2)',
+        color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14,
+        cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+      }}>
+        <Icon name="arrowLeft" size={14} stroke="#fff" /> Back
+      </button>
+    </div>
+    <iframe
+      srcDoc={game.html}
+      title={game.title}
+      sandbox="allow-scripts allow-same-origin"
+      style={{
+        flex: 1, width: '100%', border: 'none',
+        background: '#fff', borderRadius: 'var(--r-lg)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+      }}
+    />
+  </div>
+);
+
+/* ─────────────────────────────────────────────────────────
+   MAIN APP
+   ───────────────────────────────────────────────────────── */
+const App = () => {
+  const [prompt, setPrompt] = useState('');
+  const [game, setGame] = useState(null);     // { id, title, prompt, html, createdAt }
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [savedGames, setSavedGames] = useState([]);
+  const [showCode, setShowCode] = useState(false);
+  const [mode, setMode] = useState('free');
+  const [fullscreen, setFullscreen] = useState(false);
+  const iframeRef = useRef(null);
+
+  // A whimsical, locally-generated "games built today" counter — feels alive without a backend.
+  const gamesBuiltToday = useMemo(() => {
+    const seed = new Date().toDateString();
+    let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) & 0xffff;
+    return 1200 + (h % 800);
+  }, []);
+
+  // Load saved
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('champ_saved_games');
+      if (raw) setSavedGames(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const persistSaved = (next) => {
+    setSavedGames(next);
+    try { localStorage.setItem('champ_saved_games', JSON.stringify(next)); } catch {}
+  };
+
+  const generate = useCallback(async (text) => {
+    const p = (text || prompt).trim();
+    if (!p) return;
+    setLoading(true);
+    setError(null);
+    setShowCode(false);
+    setGame(null);
+    try {
+      const raw = await callClaude(p);
+      const html = extractHtml(raw);
+      if (!html || html.length < 100) throw new Error('The AI gave a strange response. Try again or rephrase your idea.');
+      const title = p.length > 44 ? p.slice(0, 44) + '…' : p;
+      setGame({ id: Date.now(), title, prompt: p, html, createdAt: Date.now() });
+      // Scroll preview into view on mobile
+      requestAnimationFrame(() => {
+        document.getElementById('preview-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    } catch (e) {
+      setError(e.message || 'Something went wrong. Try again!');
+    } finally {
+      setLoading(false);
+    }
+  }, [prompt]);
+
+  const onPickSuggestion = (s) => {
+    setPrompt(s.prompt);
+  };
+
+  const onPickStarterFromHero = (s) => {
+    setPrompt(s.prompt);
+    generate(s.prompt);
+  };
+
+  const save = () => {
+    if (!game) return;
+    const next = [game, ...savedGames.filter(g => g.id !== game.id)].slice(0, 12);
+    persistSaved(next);
+  };
+
+  const deleteSaved = (id) => {
+    if (!window.confirm('Delete this saved game?')) return;
+    persistSaved(savedGames.filter(g => g.id !== id));
+  };
+
+  const loadSaved = (g) => {
+    setGame(g);
+    setPrompt(g.prompt);
+    setShowCode(false);
+    requestAnimationFrame(() => {
+      document.getElementById('preview-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const refreshIframe = () => {
+    if (iframeRef.current && game) {
+      const src = game.html;
+      iframeRef.current.srcdoc = '';
+      requestAnimationFrame(() => { iframeRef.current.srcdoc = src; });
+    }
+  };
+
+  const downloadGame = (g = game) => {
+    if (!g) return;
+    const blob = new Blob([g.html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safe = g.title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'champ-game';
+    a.href = url;
+    a.download = `${safe}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const shareGame = async () => {
+    if (!game) return;
+    const text = `Check out the game I built: "${game.title}"`;
+    if (navigator.share) {
+      try { await navigator.share({ title: game.title, text }); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(game.prompt);
+      alert('Game prompt copied to clipboard! Paste it to share with a friend.');
+    } catch {
+      alert(`Share this prompt with your friend:\n\n${game.prompt}`);
+    }
+  };
+
+  const remixWith = (chip) => {
+    if (!game) return;
+    const remixedPrompt = `${game.prompt}\n\nAdditionally: ${chip.modifier}`;
+    setPrompt(remixedPrompt);
+    generate(remixedPrompt);
+  };
+
+  const isSaved = game && savedGames.some(g => g.id === game.id);
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header savedCount={savedGames.length} gamesBuiltToday={gamesBuiltToday} />
+
+      {/* Hero only shows when no game and not loading */}
+      {!game && !loading && !error && <Hero onPickStarter={onPickStarterFromHero} />}
+
+      {/* Main builder */}
+      <main style={{ flex: 1, maxWidth: 1200, width: '100%', margin: '0 auto', padding: '32px 32px 60px' }}>
+        <div id="preview-anchor" />
+        <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: 24, marginBottom: 24 }}>
+          {/* LEFT */}
+          <PromptPanel
+            prompt={prompt}
+            setPrompt={setPrompt}
+            generate={generate}
+            loading={loading}
+            mode={mode}
+            setMode={setMode}
+            onPickSuggestion={onPickSuggestion}
+          />
+
+          {/* RIGHT */}
+          <Preview
+            game={game}
+            loading={loading}
+            error={error}
+            showCode={showCode}
+            setShowCode={setShowCode}
+            onRetry={() => generate()}
+            iframeRef={iframeRef}
+            onRefresh={refreshIframe}
+            onFullscreen={() => setFullscreen(true)}
+          />
+        </div>
+
+        {/* Action bar (when game generated) */}
+        {game && !loading && (
+          <div style={{ marginBottom: 32 }}>
+            <ActionBar
+              game={game}
+              isSaved={isSaved}
+              onSave={save}
+              onRemixCustom={() => { document.querySelector('textarea')?.focus(); }}
+              onDownload={() => downloadGame(game)}
+              onShare={shareGame}
+              onRemixWith={remixWith}
+            />
+          </div>
+        )}
+
+        {/* Saved games */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--n-900)', letterSpacing: -0.3 }}>
+              🎮 My Saved Games
+              {savedGames.length > 0 && <span style={{ marginLeft: 8, fontFamily: 'var(--font-code)', fontSize: 13, color: 'var(--n-400)', fontWeight: 600 }}>· {savedGames.length}</span>}
+            </h2>
+            {savedGames.length > 0 && (
+              <span style={{ fontFamily: 'var(--font-code)', fontSize: 11, color: 'var(--n-200)', fontWeight: 700, letterSpacing: 1 }}>
+                STORED LOCALLY · MAX 12
+              </span>
+            )}
+          </div>
+          <SavedGames savedGames={savedGames} onLoad={loadSaved} onDelete={deleteSaved} onDownload={downloadGame} />
+        </div>
+
+        {/* Footer */}
+        <footer style={{
+          marginTop: 60, paddingTop: 24, borderTop: '1px dashed var(--border)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+          fontSize: 12, color: 'var(--n-400)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-code)', fontWeight: 600 }}>
+            <Icon name="sparkles" size={12} stroke="var(--color-accent-3)" />
+            <span>Champ Code Academy · AI Game Builder v1.0</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontFamily: 'var(--font-code)', fontWeight: 600 }}>
+            <span>Made for ages 7–15</span>
+            <span>·</span>
+            <span>Stay kind, stay curious 💚</span>
+          </div>
+        </footer>
+      </main>
+
+      {fullscreen && game && (
+        <FullscreenPlay game={game} onClose={() => setFullscreen(false)} />
+      )}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
